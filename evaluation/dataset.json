@@ -2,16 +2,15 @@
 [
   {
     "id": "rag-001",
-    "question": "What technologies are used in the AI-First CRM project?",
-    "expected_answer": "The AI-First CRM uses Python, FastAPI, React, PostgreSQL, LangGraph, and Groq LLM.",
+    "question": "What technologies are listed for the Healthcare Professional CRM Agent System?",
+    "expected_answer": "The Healthcare Professional CRM Agent System lists FastAPI, PostgreSQL, LangGraph, React, and Python.",
     "expected_keywords": [
       "FastAPI",
       "React",
       "PostgreSQL",
       "LangGraph",
-      "Groq LLM"
-    ],
-    "context": "AI-First CRM — HCP Module uses Python, FastAPI, React, PostgreSQL, LangGraph, and Groq LLM."
+      "Python"
+    ]
   },
   {
     "id": "rag-002",
@@ -21,19 +20,16 @@
       "24.72%",
       "2.18%",
       "XGBoost"
-    ],
-    "context": "The Supply Chain Demand Forecasting project used XGBoost on 73,100 records and reduced MAPE from 24.72% to 2.18%."
+    ]
   },
   {
     "id": "rag-003",
-    "question": "Which technologies were used to build the RAG Chatbot?",
-    "expected_answer": "The RAG Chatbot used Python, FastAPI, LangChain, FAISS, and Google Gemini.",
+    "question": "What degree and field of study are listed in the resume?",
+    "expected_answer": "The resume lists a B.E. in Artificial Intelligence and Data Science.",
     "expected_keywords": [
-      "FastAPI",
-      "LangChain",
-      "FAISS",
-      "Google Gemini"
-    ],
-    "context": "The RAG Chatbot was developed using Python, FastAPI, LangChain, FAISS, and Google Gemini for document-based question answering."
+      "B.E.",
+      "Artificial Intelligence",
+      "Data Science"
+    ]
   }
 ]

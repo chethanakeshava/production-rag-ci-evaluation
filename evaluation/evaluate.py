@@ -1,4 +1,3 @@
-
 import json
 import re
 import sys
@@ -6,10 +5,12 @@ from pathlib import Path
 
 DATASET_PATH = Path(__file__).parent / "dataset.json"
 MIN_KEYWORD_SCORE = 0.75
+
+
 def normalize_text(text: str) -> str:
     """Normalize case, punctuation, hyphens, and whitespace."""
     text = text.casefold()
-    text = re.sub(r"[-–—]", " ", text)
+    text = re.sub(r"[-\u2013\u2014]", " ", text)
     text = re.sub(r"[^\w\s]", " ", text)
     return " ".join(text.split())
 
@@ -43,18 +44,47 @@ def evaluate_answer(
     }
 
 
-def load_dataset() -> list[dict]:
+def load_dataset(dataset_path: str | Path = DATASET_PATH) -> list[dict]:
     """Load and validate the evaluation dataset."""
-    with DATASET_PATH.open(encoding="utf-8") as file:
+    with Path(dataset_path).open(encoding="utf-8") as file:
         dataset = json.load(file)
 
     if not isinstance(dataset, list) or not dataset:
         raise ValueError("Evaluation dataset must be a non-empty JSON list.")
 
-    for item in dataset:
-        for field in ("id", "question", "expected_keywords"):
-            if field not in item:
-                raise ValueError(f"Dataset example is missing field: {field}")
+    required_fields = {"id", "question", "expected_answer", "expected_keywords"}
+    for index, item in enumerate(dataset):
+        if not isinstance(item, dict):
+            raise TypeError(f"Dataset example {index} must be a JSON object.")
+
+        missing_fields = required_fields - item.keys()
+        if missing_fields:
+            missing = ", ".join(sorted(missing_fields))
+            raise ValueError(
+                f"Dataset example {index} is missing required fields: {missing}."
+            )
+
+        for field in ("id", "question", "expected_answer"):
+            value = item[field]
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(
+                    f"Dataset example {index} field '{field}' must be a "
+                    "non-empty string."
+                )
+
+        keywords = item["expected_keywords"]
+        if not isinstance(keywords, list) or not keywords:
+            raise ValueError(
+                f"Dataset example {index} field 'expected_keywords' "
+                "must be a non-empty list."
+            )
+        if any(
+            not isinstance(keyword, str) or not keyword.strip() for keyword in keywords
+        ):
+            raise ValueError(
+                f"Dataset example {index} expected_keywords must contain "
+                "non-empty strings."
+            )
 
     return dataset
 
@@ -66,9 +96,8 @@ def main() -> int:
     print(f"Loaded {len(dataset)} evaluation examples.")
 
     for item in dataset:
-        # Temporary expected-answer baseline until actual RAG inference
-        # is connected in a later step.
-        answer = item.get("expected_answer", "")
+        # Score the dataset's reference answer independently from RAG retrieval.
+        answer = item["expected_answer"]
         result = evaluate_answer(answer, item["expected_keywords"])
 
         status = "PASS" if result["passed"] else "FAIL"

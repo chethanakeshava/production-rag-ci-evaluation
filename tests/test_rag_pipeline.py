@@ -25,6 +25,23 @@ class FakeGenerator:
         return f"Test answer based on {chunks[0]['source']}."
 
 
+class FakeEmbeddingModel:
+    def encode(self, texts):
+        return [[1.0, 0.0] for _ in texts]
+
+
+def create_pipeline():
+    with (
+        patch("app.rag_pipeline.EmbeddingModel", return_value=FakeEmbeddingModel()),
+        patch("app.rag_pipeline.Reranker", return_value=FakeReranker()),
+        patch("app.rag_pipeline.AnswerGenerator"),
+    ):
+        pipeline = RAGPipeline()
+
+    pipeline.generator = FakeGenerator()
+    return pipeline
+
+
 def create_test_pdf(path):
     with pymupdf.open() as document:
         page = document.new_page()
@@ -40,11 +57,7 @@ def test_pipeline_ingests_pdf_and_returns_sources(tmp_path):
     pdf_path = tmp_path / "sample.pdf"
     create_test_pdf(pdf_path)
 
-    with patch("app.rag_pipeline.AnswerGenerator"):
-         pipeline = RAGPipeline()
-
-    pipeline.reranker = FakeReranker()
-    pipeline.generator = FakeGenerator()
+    pipeline = create_pipeline()
 
     chunk_count = pipeline.ingest_pdf(pdf_path)
     result = pipeline.ask("What does the pipeline retrieve?")
@@ -57,27 +70,18 @@ def test_pipeline_ingests_pdf_and_returns_sources(tmp_path):
 
 
 def test_pipeline_returns_fallback_without_documents():
-   with patch("app.rag_pipeline.AnswerGenerator"):
-    pipeline = RAGPipeline()
-
-    pipeline.reranker = FakeReranker()
-    pipeline.generator = FakeGenerator()
+    pipeline = create_pipeline()
 
     result = pipeline.ask("What is in the documents?")
 
     assert "don't have enough evidence" in result["answer"]
     assert result["sources"] == []
 
-def test_pipeline_rejects_empty_question(monkeypatch):
+
+def test_pipeline_rejects_empty_question():
     import pytest
 
-    monkeypatch.setenv("GROQ_API_KEY", "test-key")
-
-    with patch("app.rag_pipeline.AnswerGenerator"):
-         pipeline = RAGPipeline()
-
-    pipeline.reranker = FakeReranker()
-    pipeline.generator = FakeGenerator()
+    pipeline = create_pipeline()
 
     with pytest.raises(ValueError, match="Question cannot be empty"):
         pipeline.ask("   ")

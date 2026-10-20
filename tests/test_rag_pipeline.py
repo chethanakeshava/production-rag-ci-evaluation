@@ -1,3 +1,4 @@
+from unittest.mock import patch
 
 import pymupdf
 
@@ -39,7 +40,9 @@ def test_pipeline_ingests_pdf_and_returns_sources(tmp_path):
     pdf_path = tmp_path / "sample.pdf"
     create_test_pdf(pdf_path)
 
-    pipeline = RAGPipeline()
+    with patch("app.rag_pipeline.AnswerGenerator"):
+         pipeline = RAGPipeline()
+
     pipeline.reranker = FakeReranker()
     pipeline.generator = FakeGenerator()
 
@@ -54,7 +57,9 @@ def test_pipeline_ingests_pdf_and_returns_sources(tmp_path):
 
 
 def test_pipeline_returns_fallback_without_documents():
+   with patch("app.rag_pipeline.AnswerGenerator"):
     pipeline = RAGPipeline()
+
     pipeline.reranker = FakeReranker()
     pipeline.generator = FakeGenerator()
 
@@ -68,7 +73,9 @@ def test_pipeline_rejects_empty_question(monkeypatch):
 
     monkeypatch.setenv("GROQ_API_KEY", "test-key")
 
-    pipeline = RAGPipeline()
+    with patch("app.rag_pipeline.AnswerGenerator"):
+         pipeline = RAGPipeline()
+
     pipeline.reranker = FakeReranker()
     pipeline.generator = FakeGenerator()
 

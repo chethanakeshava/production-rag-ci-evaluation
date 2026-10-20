@@ -1,22 +1,37 @@
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
 from app.rag_pipeline import RAGPipeline
 from evaluation.evaluate import evaluate_answer, load_dataset, normalize_text
+from evaluation.groundedness import evaluate_groundedness
 
 MIN_CONTEXT_RECALL = 0.75
+RESULTS_PATH = Path("evaluation/results.json")
 
 
-def evaluate_example(answer_evaluation: dict, context_recall: float) -> dict:
-    """Pass only when answer quality and context recall meet their thresholds."""
+def evaluate_example(
+    answer_evaluation: dict,
+    context_recall: float,
+    groundedness_evaluation: dict | None = None,
+) -> dict:
+    """Pass only when answer, context, and groundedness checks pass."""
     answer_passed = answer_evaluation["passed"]
     context_passed = context_recall >= MIN_CONTEXT_RECALL
+
+    groundedness_passed = (
+        groundedness_evaluation["passed"]
+        if groundedness_evaluation is not None
+        else True
+    )
+
     return {
         "answer_passed": answer_passed,
         "context_passed": context_passed,
-        "passed": answer_passed and context_passed,
+        "groundedness_passed": groundedness_passed,
+        "passed": (answer_passed and context_passed and groundedness_passed),
     }
 
 
@@ -35,6 +50,16 @@ def evaluate_context(chunks: list[dict], expected_keywords: list[str]) -> dict:
     ]
     recall = len(matched) / len(expected_keywords) if expected_keywords else 1.0
     return {"recall": recall, "matched": matched, "missing": missing}
+
+
+def split_answer_claims(answer: str) -> list[str]:
+    """Use answer sentences as deterministic candidate groundedness claims."""
+    without_citations = re.sub(r"\[\d+\]", "", answer)
+    return [
+        sentence.strip()
+        for sentence in re.split(r"(?<=[.!?])\s+(?=[A-Z0-9])", without_citations)
+        if sentence.strip()
+    ]
 
 
 def main() -> int:
@@ -72,16 +97,31 @@ def main() -> int:
         answer = result["answer"]
         retrieved_chunks = result.get("sources", [])
         evaluation = evaluate_answer(answer, item["expected_keywords"])
+        answer_claims = split_answer_claims(answer)
         context_evaluation = evaluate_context(
             retrieved_chunks, item["expected_keywords"]
+        )
+        groundedness_evaluation = evaluate_groundedness(
+            answer_claims,
+            retrieved_chunks,
         )
         context_matches = context_evaluation["matched"]
         context_recall = context_evaluation["recall"]
         print(f"Context recall: {context_recall:.2f}")
         print(f"Keywords found in context: {context_matches}")
-        gate = evaluate_example(evaluation, context_recall)
+        print(f"Groundedness: {groundedness_evaluation['score']:.2f}")
+        print(
+            "Unsupported answer claims: "
+            f"{groundedness_evaluation['unsupported_claims']}"
+        )
+        gate = evaluate_example(
+            evaluation,
+            context_recall,
+            groundedness_evaluation,
+        )
         answer_passed = gate["answer_passed"]
         context_passed = gate["context_passed"]
+        groundedness_passed = gate["groundedness_passed"]
         example_passed = gate["passed"]
         status = "PASS" if example_passed else "FAIL"
         print(f"{item['id']}: {status}")
@@ -98,6 +138,10 @@ def main() -> int:
                 "context_matches": context_matches,
                 "context_missing_keywords": context_evaluation["missing"],
                 "missing_keywords": evaluation["missing_keywords"],
+                "groundedness_score": groundedness_evaluation["score"],
+                "groundedness_passed": groundedness_passed,
+                "supported_claims": groundedness_evaluation["supported_claims"],
+                "unsupported_claims": groundedness_evaluation["unsupported_claims"],
                 "retrieved_sources": [
                     {
                         "source": chunk.get("source"),
@@ -117,7 +161,7 @@ def main() -> int:
         f"{failures} failed out of {len(dataset)}."
     )
 
-    report_path = Path("evaluation/results.json")
+    report_path = RESULTS_PATH
     report_path.parent.mkdir(parents=True, exist_ok=True)
     with report_path.open("w", encoding="utf-8") as file:
         json.dump(report, file, indent=2, ensure_ascii=False)

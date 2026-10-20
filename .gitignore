@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+# Virtual environment
+.venv/
+venv/
+env/
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+# Test and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+# Code quality
+.ruff_cache/
+# Logs
+*.log
+# Generated data and indexes
+data/processed/
+*.faiss
+*.index
+*.pkl
+# Editor and operating system
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

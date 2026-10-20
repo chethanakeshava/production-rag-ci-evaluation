@@ -1,0 +1,39 @@
+
+[
+  {
+    "id": "rag-001",
+    "question": "What technologies are used in the AI-First CRM project?",
+    "expected_answer": "The AI-First CRM uses Python, FastAPI, React, PostgreSQL, LangGraph, and Groq LLM.",
+    "expected_keywords": [
+      "FastAPI",
+      "React",
+      "PostgreSQL",
+      "LangGraph",
+      "Groq LLM"
+    ],
+    "context": "AI-First CRM — HCP Module uses Python, FastAPI, React, PostgreSQL, LangGraph, and Groq LLM."
+  },
+  {
+    "id": "rag-002",
+    "question": "What improvement did the Supply Chain Demand Forecasting project achieve?",
+    "expected_answer": "The project reduced MAPE from 24.72% to 2.18% using an XGBoost demand forecasting pipeline.",
+    "expected_keywords": [
+      "24.72%",
+      "2.18%",
+      "XGBoost"
+    ],
+    "context": "The Supply Chain Demand Forecasting project used XGBoost on 73,100 records and reduced MAPE from 24.72% to 2.18%."
+  },
+  {
+    "id": "rag-003",
+    "question": "Which technologies were used to build the RAG Chatbot?",
+    "expected_answer": "The RAG Chatbot used Python, FastAPI, LangChain, FAISS, and Google Gemini.",
+    "expected_keywords": [
+      "FastAPI",
+      "LangChain",
+      "FAISS",
+      "Google Gemini"
+    ],
+    "context": "The RAG Chatbot was developed using Python, FastAPI, LangChain, FAISS, and Google Gemini for document-based question answering."
+  }
+]

@@ -1,0 +1,41 @@
+[
+  {
+    "id": "rag-001",
+    "answer_score": 1.0,
+    "answer_passed": true,
+    "context_recall": 1.0,
+    "context_matches": [
+      "FastAPI",
+      "React",
+      "PostgreSQL",
+      "LangGraph",
+      "Groq LLM"
+    ],
+    "missing_keywords": []
+  },
+  {
+    "id": "rag-002",
+    "answer_score": 1.0,
+    "answer_passed": true,
+    "context_recall": 1.0,
+    "context_matches": [
+      "24.72%",
+      "2.18%",
+      "XGBoost"
+    ],
+    "missing_keywords": []
+  },
+  {
+    "id": "rag-003",
+    "answer_score": 1.0,
+    "answer_passed": true,
+    "context_recall": 1.0,
+    "context_matches": [
+      "FastAPI",
+      "LangChain",
+      "FAISS",
+      "Google Gemini"
+    ],
+    "missing_keywords": []
+  }
+]

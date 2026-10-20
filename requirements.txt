@@ -8,3 +8,6 @@ google-genai
 python-dotenv
 python-multipart
 groq
+sentence-transformers
+faiss-cpu
+rank-bm25

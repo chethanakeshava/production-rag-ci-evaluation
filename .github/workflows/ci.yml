@@ -30,3 +30,6 @@ jobs:
 
       - name: Run automated tests
         run: python -m pytest -q
+
+      - name: Run retrieval quality gate
+        run: python -m evaluation.benchmark.run_benchmark --skip-models

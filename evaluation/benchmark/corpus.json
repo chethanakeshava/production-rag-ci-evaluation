@@ -1,0 +1,39 @@
+
+[
+  {
+    "id": "api-framework",
+    "text": "FastAPI serves the application's HTTP API endpoints.",
+    "source": "synthetic_architecture.md",
+    "page": 1
+  },
+  {
+    "id": "database",
+    "text": "PostgreSQL stores the application's structured records.",
+    "source": "synthetic_architecture.md",
+    "page": 2
+  },
+  {
+    "id": "hybrid-retrieval",
+    "text": "The hybrid retriever combines BM25 keyword rankings and FAISS semantic rankings using Reciprocal Rank Fusion.",
+    "source": "synthetic_architecture.md",
+    "page": 3
+  },
+  {
+    "id": "reranker",
+    "text": "A CrossEncoder reranks retrieved candidate chunks by relevance score.",
+    "source": "synthetic_architecture.md",
+    "page": 4
+  },
+  {
+    "id": "embeddings",
+    "text": "The embedding model encodes text into vectors for semantic similarity search.",
+    "source": "synthetic_architecture.md",
+    "page": 5
+  },
+  {
+    "id": "chunking",
+    "text": "The ingestion pipeline splits PDF pages into smaller text chunks before indexing.",
+    "source": "synthetic_architecture.md",
+    "page": 6
+  }
+]

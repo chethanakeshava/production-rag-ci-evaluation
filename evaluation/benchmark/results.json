@@ -1,0 +1,11 @@
+{
+  "bm25": {
+    "recall_at_3": 1.0,
+    "mrr": 0.8333333333333334,
+    "average_latency_ms": 0.2103750011883676
+  },
+  "gate": {
+    "minimum_recall": 0.75,
+    "passed": true
+  }
+}

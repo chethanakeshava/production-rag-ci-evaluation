@@ -1,0 +1,23 @@
+
+[
+  {
+    "id": "q001",
+    "question": "Which framework serves the API?",
+    "relevant_chunk_ids": ["api-framework"]
+  },
+  {
+    "id": "q002",
+    "question": "Which database stores application records?",
+    "relevant_chunk_ids": ["database"]
+  },
+  {
+    "id": "q003",
+    "question": "How are retrieval results combined?",
+    "relevant_chunk_ids": ["hybrid-retrieval"]
+  },
+  {
+    "id": "q004",
+    "question": "Which model reorders retrieved chunks?",
+    "relevant_chunk_ids": ["reranker"]
+  }
+]
